@@ -1,33 +1,35 @@
 import React, { useMemo, useState } from "react";
 
-// Bayes PPV calculator with three sliders: sensitivity, specificity, prevalence
-// P(disease | +) = (sens * prev) / (sens * prev + (1 - spec) * (1 - prev))
+// Shows PPV = P(disease | +) with sliders for Sensitivity, Specificity, Prevalence
+// Formula: PPV = (sens * prev) / (sens * prev + (1 - spec) * (1 - prev))
 
 export default function App() {
-  const [sensitivityPct, setSensitivityPct] = useState(90);
-  const [specificityPct, setSpecificityPct] = useState(95);
-  const [prevalencePct, setPrevalencePct] = useState(5);
+  const [sensitivityPct, setSensitivityPct] = useState<number>(90);
+  const [specificityPct, setSpecificityPct] = useState<number>(95);
+  const [prevalencePct, setPrevalencePct] = useState<number>(5);
 
-  const sensitivity = sensitivityPct / 100; // as 0..1
-  const specificity = specificityPct / 100; // as 0..1
-  const prevalence = prevalencePct / 100;   // as 0..1
+  const sensitivity = sensitivityPct / 100; // 0..1
+  const specificity = specificityPct / 100; // 0..1
+  const prevalence = prevalencePct / 100;   // 0..1
 
   const ppv = useMemo(() => {
     const tp = sensitivity * prevalence;
     const fp = (1 - specificity) * (1 - prevalence);
     const denom = tp + fp;
-    if (denom === 0) return NaN; // undefined case
+    if (denom === 0) return NaN;
     return tp / denom;
   }, [sensitivity, specificity, prevalence]);
 
-  const fmtPct = (x) => (Number.isFinite(x) ? (x * 100).toFixed(2) + "%" : "n/a");
+  const fmtPct = (x: number) => (Number.isFinite(x) ? (x * 100).toFixed(2) + "%" : "n/a");
 
   return (
     <div className="min-h-screen w-full bg-slate-50 text-slate-900 p-6">
       <div className="max-w-3xl mx-auto">
         <header className="mb-6">
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">P(disease | positive) — PPV Calculator</h1>
-          <p className="mt-2 text-sm text-slate-600">Adjust the sliders for <span className="font-medium">Sensitivity</span>, <span className="font-medium">Specificity</span>, and <span className="font-medium">Prevalence</span>. The result shows the <span className="font-medium">Positive Predictive Value</span> (PPV) = P(disease | +).</p>
+          <p className="mt-2 text-sm text-slate-600">
+            Adjust <span className="font-medium">Sensitivity</span>, <span className="font-medium">Specificity</span>, and <span className="font-medium">Prevalence</span>. The result shows the <span className="font-medium">Positive Predictive Value</span> (PPV).
+          </p>
         </header>
 
         <div className="grid gap-5">
